@@ -19,7 +19,7 @@ def main(argv):
     with tempfile.TemporaryDirectory() as tmpdir:
         for filename in args.input_files:
             def name(version):
-                return "%s/%s.%s.png" % (tmpdir, filename, version)
+                return "%s/%s.png" % (tmpdir, version)
             run('convert', filename,
                 '-statistic', 'median', 2,
                 '-resize', '2048x2048',
