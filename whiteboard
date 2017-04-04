@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+# Convert a whiteboard photo to be readable.
+
+import argparse
+import subprocess
+import sys
+import tempfile
+
+def run(*args):
+    cmd = [str(foo) for foo in args]
+    print(" ".join(cmd), file=sys.stderr)
+    subprocess.check_call(cmd)
+
+def main(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_files', nargs='+')
+    args = parser.parse_args(argv)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for filename in args.input_files:
+            def name(version):
+                return "%s/%s.%s.png" % (tmpdir, filename, version)
+            run('convert', filename,
+                '-statistic', 'median', 2,
+                '-resize', '2048x2048',
+                name('median'))
+            run('convert', name('median'),
+                '-statistic', 'median', '3x100',
+                '-statistic', 'median', '100x3',
+                name('blurred'))
+            run('composite', name('blurred'), name('median'),
+                '-compose', 'minus',
+                name('unsharp'))
+            run('convert', name('unsharp'),
+                '-negate',
+                '-normalize',
+                '-evaluate', 'subtract', 40,
+                '-evaluate', 'multiply', 1.3,
+                filename + '.whiteboard.png')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
