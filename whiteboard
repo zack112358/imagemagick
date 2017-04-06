@@ -27,8 +27,8 @@ def main(argv):
             run('convert', name('median'),
                 '-statistic', 'median', '3x100',
                 '-statistic', 'median', '100x3',
-                name('blurred'))
-            run('composite', name('blurred'), name('median'),
+                filename + '.blurred.png')
+            run('composite', filename + '.blurred.png', name('median'),
                 '-compose', 'minus',
                 name('unsharp'))
             run('convert', name('unsharp'),
