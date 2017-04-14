@@ -21,6 +21,7 @@ def main(argv):
             def name(version):
                 return "%s/%s.png" % (tmpdir, version)
             run('convert', filename,
+                '-normalize',
                 '-statistic', 'median', 2,
                 '-resize', '2048x2048',
                 name('median'))
@@ -32,10 +33,9 @@ def main(argv):
                 '-compose', 'minus',
                 name('unsharp'))
             run('convert', name('unsharp'),
-                '-negate',
-                '-normalize',
-                '-evaluate', 'subtract', 40,
-                '-evaluate', 'multiply', 1.3,
+                '-negate', name('negate'))
+            run('convert', name('negate'),
+                '-level', '50%,98%',
                 filename + '.whiteboard.png')
 
 
